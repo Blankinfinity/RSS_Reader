@@ -8,11 +8,16 @@ using System.Xml;
 
 namespace RSS_Reader
 {
-    public static class RssService
+    public class RssService
     {
-        private static HttpClient Client = new HttpClient();
+        private static HttpClient _client;
 
-        public static async Task<List<ItemModel>> LoadFeed(string url)
+        public RssService()
+        {
+            _client = new HttpClient();
+        }
+
+        public async Task<List<ItemModel>> LoadFeed(string url)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
@@ -20,7 +25,7 @@ namespace RSS_Reader
 
             try
             {
-                var feedResult = await Client.GetStringAsync(url);
+                var feedResult = await _client.GetStringAsync(url);
 
                 if (feedResult != null)
                 {
