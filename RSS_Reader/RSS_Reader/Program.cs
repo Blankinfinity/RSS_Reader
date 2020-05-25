@@ -1,6 +1,7 @@
 ﻿using RSS_Model;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -10,20 +11,20 @@ namespace RSS_Reader
 {
     class Program
     {
-        private static List<ItemModel> booksList = new List<ItemModel>();
-        private static List<ItemModel> foodList = new List<ItemModel>();
+        private static List<ItemModel> booksList;
+        private static List<ItemModel> foodList;
 
         public static async Task Main(string[] args)
         {
             bool showMenu = true;
             while (showMenu)
             {
-                showMenu = await LoadMenu();
+                showMenu = await MainMenu();
             }
             
         }
 
-        public static async Task<bool> LoadMenu()
+        public static async Task<bool> MainMenu()
         {
             var showMenu = await Task.Run(async () =>
              {
@@ -40,9 +41,8 @@ namespace RSS_Reader
                      switch (selectedValue)
                      {
                          case 1:
-                             var feeds = await RssService.LoadFeeds();
-                             booksList = feeds[0];
-                             foodList = feeds[1];
+                             booksList = await RssService.LoadFeed(ConfigurationManager.AppSettings["books"]);
+                             foodList = await RssService.LoadFeed(ConfigurationManager.AppSettings["food"]);
                              return true;
                          case 2:
                              booksList.ForEach(item => Console.WriteLine($"Title: {item.Title}\r\nDescription: {item.Description}\r\nLink: {item.Link}\r\nPubDate: {item.PubDate}\r\n", item));
