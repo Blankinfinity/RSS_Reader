@@ -10,6 +10,9 @@ namespace RSS_Reader
 {
     class Program
     {
+        private static List<ItemModel> booksList = new List<ItemModel>();
+        private static List<ItemModel> foodList = new List<ItemModel>();
+
         public static async Task Main(string[] args)
         {
             bool showMenu = true;
@@ -37,12 +40,17 @@ namespace RSS_Reader
                      switch (selectedValue)
                      {
                          case 1:
-                             await RssService.LoadFeeds();
+                             var feeds = await RssService.LoadFeeds();
+                             booksList = feeds[0];
+                             foodList = feeds[1];
                              return true;
                          case 2:
-
+                             booksList.ForEach(item => Console.WriteLine($"Title: {item.Title}\r\nDescription: {item.Description}\r\nLink: {item.Link}\r\nPubDate: {item.PubDate}\r\n", item));
+                             Console.ReadKey();
                              return true;
                          case 3:
+                             foodList.ForEach(item => Console.WriteLine($"Title: {item.Title}\r\nDescription: {item.Description}\r\nLink: {item.Link}\r\nPubDate: {item.PubDate}\r\n", item));
+                             Console.ReadKey();
                              return true;
                          case 4:
                              return false;

@@ -13,19 +13,21 @@ namespace RSS_Reader
     public static class RssService
     {
         private static HttpClient Client = new HttpClient();
+        private static List<List<ItemModel>> feedsList;
 
-        private static List<ItemModel> booksList = new List<ItemModel>();
-        public static async Task LoadFeeds()
+        public static async Task<List<List<ItemModel>>> LoadFeeds()
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
-            var result = await Client.GetStringAsync("https://www.buzzfeed.com/books.xml");
+            List<ItemModel> booksList = new List<ItemModel>();
 
-            if (result != null)
+            var booksResult = await Client.GetStringAsync("https://www.buzzfeed.com/books.xml");
+
+            if (booksResult != null)
             {
                 var rssDoc = new XmlDocument();
                 // Technically you could just load the url but i prefer to use HttpClient for my web requests so here we use LoadXml instead.
-                rssDoc.LoadXml(result);
+                rssDoc.LoadXml(booksResult);
 
                 XmlNodeList rssNodes = rssDoc.SelectNodes("rss/channel/item");
 
@@ -47,9 +49,50 @@ namespace RSS_Reader
                     booksList.Add(item);
                 }
 
-                booksList.ForEach(item => Console.WriteLine($"Title: {item.Title}\r\nDescription: {item.Description}\r\nLink: {item.Link}\r\nPubDate: {item.PubDate}\r\n", item));
-                Console.ReadKey();
+                
+
             }
+
+            List<ItemModel> foodList = new List<ItemModel>();
+
+            var foodResult = await Client.GetStringAsync("https://www.buzzfeed.com/food.xml");
+
+            if (foodResult != null)
+            {
+                var rssDoc = new XmlDocument();
+                // Technically you could just load the url but i prefer to use HttpClient for my web requests so here we use LoadXml instead.
+                rssDoc.LoadXml(foodResult);
+
+                XmlNodeList rssNodes = rssDoc.SelectNodes("rss/channel/item");
+
+                foreach (XmlNode rssNode in rssNodes)
+                {
+                    var item = new ItemModel();
+                    XmlNode rssSubNode = rssNode.SelectSingleNode("title");
+                    item.Title = rssSubNode != null ? rssSubNode.InnerText : "";
+
+                    rssSubNode = rssNode.SelectSingleNode("link");
+                    item.Link = rssSubNode != null ? rssSubNode.InnerText : "";
+
+                    rssSubNode = rssNode.SelectSingleNode("description");
+                    item.Description = rssSubNode != null ? rssSubNode.InnerText : "";
+
+                    rssSubNode = rssNode.SelectSingleNode("pubDate");
+                    item.PubDate = DateTime.Parse(rssSubNode.InnerText);
+
+                    foodList.Add(item);
+                }
+            }
+
+
+            booksList.ForEach(item => Console.WriteLine($"Title: {item.Title}\r\nDescription: {item.Description}\r\nLink: {item.Link}\r\nPubDate: {item.PubDate}\r\n", item));
+            foodList.ForEach(item => Console.WriteLine($"Title: {item.Title}\r\nDescription: {item.Description}\r\nLink: {item.Link}\r\nPubDate: {item.PubDate}\r\n", item));
+            Console.ReadKey();
+            return feedsList = new List<List<ItemModel>>
+            {
+                booksList,
+                foodList
+            };
         }
     }
 }
