@@ -8,12 +8,15 @@ namespace RSS_Reader
 {
     class Program
     {
-        private static List<ItemModel> booksList;
-        private static List<ItemModel> foodList;
-        private static RssService rssService = new RssService();
+        private static IFeedInfo feedInfo = new FeedInfo();
+        private static RssService rssService;
+        private static FeedFileService feedFileService;
 
         public static async Task Main(string[] args)
         {
+
+            rssService = new RssService(feedInfo);
+            feedFileService = new FeedFileService(feedInfo);
             bool showMenu = true;
             while (showMenu)
             {
@@ -39,16 +42,14 @@ namespace RSS_Reader
                      switch (selectedValue)
                      {
                          case 1:
-                             
-                             booksList = await rssService.LoadFeed(ConfigurationManager.AppSettings["books"]);
-                             foodList = await rssService.LoadFeed(ConfigurationManager.AppSettings["food"]);
+                             await rssService.DownloadFeeds();                             
                              return true;
                          case 2:
-                             booksList.ForEach(item => Console.WriteLine($"Title: {item.Title}\r\nDescription: {item.Description}\r\nLink: {item.Link}\r\nPubDate: {item.PubDate}\r\n", item));
+                             await feedFileService.ReadFromFile("books");
                              Console.ReadKey();
                              return true;
                          case 3:
-                             foodList.ForEach(item => Console.WriteLine($"Title: {item.Title}\r\nDescription: {item.Description}\r\nLink: {item.Link}\r\nPubDate: {item.PubDate}\r\n", item));
+                             await feedFileService.ReadFromFile("food");
                              Console.ReadKey();
                              return true;
                          case 4:

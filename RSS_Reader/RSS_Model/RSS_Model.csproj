@@ -41,7 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FeedModel.cs" />
+    <Compile Include="FeedInfo.cs" />
+    <Compile Include="IFeedInfo.cs" />
     <Compile Include="ItemModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

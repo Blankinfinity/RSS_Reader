@@ -1,6 +1,7 @@
 ﻿using RSS_Model;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -11,11 +12,20 @@ namespace RSS_Reader
     public class RssService
     {
         private static HttpClient _client;
+        public IFeedInfo _feedInfo;
 
-        public RssService()
+        public RssService(IFeedInfo feedInfo)
         {
             _client = new HttpClient();
+            _feedInfo = feedInfo;
         }
+
+        public async Task DownloadFeeds()
+        {
+            _feedInfo.FeedsList = new List<List<ItemModel>>();
+            _feedInfo.FeedsList.Add(await LoadFeed(ConfigurationManager.AppSettings["books"]));
+            _feedInfo.FeedsList.Add(await LoadFeed(ConfigurationManager.AppSettings["food"]));
+         }
 
         public async Task<List<ItemModel>> LoadFeed(string url)
         {
