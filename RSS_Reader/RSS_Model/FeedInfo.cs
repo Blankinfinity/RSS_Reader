@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace RSS_Model
 {
     public class FeedInfo : IFeedInfo
     {
-        public List<List<ItemModel>> FeedsList { get; set; }
+        public List<ItemModel> FeedList { get; set; }
     }
 }

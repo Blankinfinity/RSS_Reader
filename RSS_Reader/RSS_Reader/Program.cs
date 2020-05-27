@@ -1,22 +1,21 @@
 ﻿using RSS_Model;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Threading.Tasks;
 
 namespace RSS_Reader
 {
     class Program
     {
-        private static IFeedInfo feedInfo = new FeedInfo();
+        private static IFeedInfo _booksFeedInfo = new FeedInfo();
+        private static IFeedInfo _foodFeedInfo = new FeedInfo();
         private static RssService rssService;
         private static FeedFileService feedFileService;
 
         public static async Task Main(string[] args)
         {
 
-            rssService = new RssService(feedInfo);
-            feedFileService = new FeedFileService(feedInfo);
+            rssService = new RssService(_booksFeedInfo, _foodFeedInfo);
+            feedFileService = new FeedFileService(_booksFeedInfo, _foodFeedInfo);
             bool showMenu = true;
             while (showMenu)
             {
@@ -45,12 +44,10 @@ namespace RSS_Reader
                              await rssService.DownloadFeeds();                             
                              return true;
                          case 2:
-                             await feedFileService.ReadFromFile("books");
-                             Console.ReadKey();
+                             await feedFileService.ReadFeed("books");
                              return true;
                          case 3:
-                             await feedFileService.ReadFromFile("food");
-                             Console.ReadKey();
+                             await feedFileService.ReadFeed("food");
                              return true;
                          case 4:
                              return false;
